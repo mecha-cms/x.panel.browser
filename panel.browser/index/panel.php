@@ -56,16 +56,16 @@ if (isset($_['chops'][0]) && 'asset' === $_['chops'][0]) {
     if (Get::get('window')) {
         Hook::set('_', function($_) {
             // Hide navigation bar if we are in browser mode
-            $_['lot']['bar']['hidden'] = true;
+            $_['lot']['bar']['skip'] = true;
             // Create insert task on every file in the list
             $key = Get::get('key');
             $name = Get::get('name');
             if (isset($_['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['files']['lot']['files']['lot'])) {
                 foreach ($_['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['files']['lot']['files']['lot'] as $k => &$v) {
                     // Hide edit task
-                    $v['tasks']['g']['hidden'] = true;
+                    $v['tasks']['g']['skip'] = true;
                     // Hide delete task
-                    $v['tasks']['l']['hidden'] = true;
+                    $v['tasks']['l']['skip'] = true;
                     // Create insert task
                     $v['tasks']['insert'] = [
                         'active' => $f = is_file($k),
@@ -84,7 +84,7 @@ if (isset($_['chops'][0]) && 'asset' === $_['chops'][0]) {
 }
 
 // Check if we are in the page editor
-if (isset($_['layout']) && ('page' === $_['layout'] || 0 === strpos($_['layout'], 'page.'))) {
+if (isset($_['type']) && 0 === strpos($_['type'] . '/', 'page/')) {
     // Load the browser function only in the page editor
     Asset::script($function_browser, 10);
     Hook::set('_', function($_) use($url) {

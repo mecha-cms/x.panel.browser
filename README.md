@@ -8,6 +8,10 @@ Panel Browser Example
 Release Notes
 -------------
 
+### 1.1.0
+
+ - Updated for Panel 2.5.0.
+
 ### 1.0.0
 
  - Initial release.
