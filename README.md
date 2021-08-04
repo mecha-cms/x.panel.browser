@@ -1,7 +1,5 @@
-Panel Browser Example
-=====================
-
-> Using the control panel API to make a simple asset browser feature.
+Panel Browser Example for Mecha&rsquo;s [Panel](https://github.com/mecha-cms/mecha)
+===================================================================================
 
 ![1](https://user-images.githubusercontent.com/1669261/93096452-9b742f00-f6ce-11ea-9666-0b42fabe7bfd.png)
 
