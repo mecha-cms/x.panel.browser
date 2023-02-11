@@ -2,9 +2,9 @@
 
 $function_browse = <<<JS
 function browse(width, height) {
-    let left = (screen.width / 2) - (width / 2),
-        top = (screen.height / 2) - (height / 2);
-    return window.open(this.href, 'browser', 'width=' + width + ',height=' + height + ',top=' + top + ',left=' + left);
+    let left = (window.innerWidth / 2) + window.screenX - (width / 2);
+    let top = (window.innerHeight / 2) + window.screenY - (height / 2);
+    return window.open(this.href, 'browser', 'height=' + height + ',left=' + left + ',top=' + top + ',width=' + width);
 }
 JS;
 
@@ -50,31 +50,35 @@ function insert(name, key) {
 JS;
 
 // Check if we are in the asset(s) page
-if (isset($_['chop'][0]) && 'asset' === $_['chop'][0]) {
-    // Load the insert function only in the asset(s) page
-    Asset::script($function_insert, 10);
-    if (Get::get('window')) {
-        Hook::set('_', function($_) {
+if (0 === strpos($_['path'] . '/', 'asset/')) {
+    if (!empty($_GET['browser'])) {
+        Hook::set('_', function ($_) use ($function_insert) {
+            // Load the insert function only in the asset(s) page
+            $_['asset'][] = [
+                'link' => 'data:text/js;base64,' . To::base64($function_insert),
+                'stack' => 10
+            ];
             // Hide navigation bar if we are in browse mode
             $_['lot']['bar']['skip'] = true;
             // Create insert task on every file in the list
-            $key = Get::get('key');
-            $name = Get::get('name');
+            $key = $_GET['key'] ?? null;
+            $name = $_GET['name'] ?? null;
             if (isset($_['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['files']['lot']['files']['lot'])) {
                 foreach ($_['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['files']['lot']['files']['lot'] as $k => &$v) {
+                    $is_file = is_file($k);
                     // Hide edit task
-                    $v['tasks']['g']['skip'] = true;
+                    $v['tasks']['get']['skip'] = true;
                     // Hide delete task
-                    $v['tasks']['l']['skip'] = true;
+                    $v['tasks']['let']['skip'] = true;
                     // Create insert task
                     $v['tasks']['insert'] = [
-                        'active' => $f = is_file($k),
+                        '2' => $is_file ? ['onclick' => 'return insert.call(this, \'' . $name . '\', \'' . $key . '\'), false;'] : [],
+                        'active' => $is_file,
+                        'description' => 'Insert file URL.',
                         'icon' => 'M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z',
-                        'title' => 'Insert',
-                        '2' => $f ? ['onclick' => 'return insert.call(this, \'' . $name . '\', \'' . $key . '\'), false;'] : [],
-                        'description' => 'Insert this file to the editor.',
-                        'link' => $f ? To::URL($k) : null,
-                        'stack' => 10
+                        'link' => $is_file ? To::URL($k) : null,
+                        'stack' => 10,
+                        'title' => 'Insert'
                     ];
                 }
                 unset($v);
@@ -85,17 +89,47 @@ if (isset($_['chop'][0]) && 'asset' === $_['chop'][0]) {
 }
 
 // Check if we are in the page editor
-if (isset($_['type']) && 0 === strpos($_['type'] . '/', 'page/')) {
-    // Load the browse function only in the page editor
-    Asset::script($function_browse, 10);
-    Hook::set('_', function($_) use($url) {
-        // Add a browse link on the page `content` field
+$is_page = 0 === strpos($_['type'] . '/', 'page/');
+if (!$_['type'] && ($file = $_['file'])) {
+    $is_page = false !== strpos(',archive,draft,page,', ',' . pathinfo($file, PATHINFO_EXTENSION) . ',');
+}
+
+if ($is_page) {
+    Hook::set('_', function ($_) use ($function_browse) {
+        // Load the browse function only in the page editor
+        $_['asset'][] = [
+            'link' => 'data:text/js;base64,' . To::base64($function_browse),
+            'stack' => 10
+        ];
+        // Add a browse link on the `page[content]` field
         if (isset($_['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['page']['lot']['fields']['lot']['content'])) {
-            $_['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['page']['lot']['fields']['lot']['content']['description'] = 'This is an example description for the page content field. <a href="' . $_['/'] . '/::g::/asset/1?key=page[content]&name=set&window=1" onclick="return browse.call(this, 600, 300), false;" target="_blank">Click here</a> to insert a file.';
+            $_['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['page']['lot']['fields']['lot']['content']['description'] = 'This is an example description for the page content field. <a href="' . x\panel\to\link([
+                'hash' => null,
+                'part' => 1,
+                'path' => 'asset',
+                'query' => [
+                    'browser' => 1,
+                    'key' => 'page[content]',
+                    'name' => 'set',
+                    'type' => null
+                ],
+                'task' => 'get'
+            ]) . '" onclick="return browse.call(this, 600, 300), false;" target="_blank">Click here</a> to insert a file.';
         }
-        // Add a browse link on the page `link` field
+        // Add a browse link on the `page[link]` field
         if (isset($_['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['data']['lot']['fields']['lot']['link'])) {
-            $_['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['data']['lot']['fields']['lot']['link']['description'] = 'This is an example description for the page link field. <a href="' . $_['/'] . '/::g::/asset/1?key=page[link]&name=set&window=1" onclick="return browse.call(this, 600, 300), false;" target="_blank">Click here</a> to insert a file.';
+            $_['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['data']['lot']['fields']['lot']['link']['description'] = 'This is an example description for the page link field. <a href="' . x\panel\to\link([
+                'hash' => null,
+                'part' => 1,
+                'path' => 'asset',
+                'query' => [
+                    'browser' => 1,
+                    'key' => 'page[link]',
+                    'name' => 'set',
+                    'type' => null
+                ],
+                'task' => 'get'
+            ]) . '" onclick="return browse.call(this, 600, 300), false;" target="_blank">Click here</a> to insert a file.';
         }
         return $_;
     }, 10);
