@@ -10,3 +10,10 @@ version: 2.0.0
 use:
   '.\lot\x\panel': 1
 ...
+
+This is just an example of using the control panel feature to add a file link insert feature. This extension was last
+updated to work with [Panel](https://github.com/mecha-cms/x.panel) version 3.0.0. This extension may become obsolete
+over time as it is not used for production but rather as a starting point for making similar features.
+
+Some other extensions may have their own rules about how the user should insert file links, so a developer will usually
+bundle this kind of feature together with the extension that requires it.
