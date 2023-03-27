@@ -6,9 +6,6 @@ color: '#84336f'
 author: Taufik Nurrohman
 type: Markdown
 version: 2.0.0
-
-use:
-  '.\lot\x\panel': 1
 ...
 
 This is just an example of using the control panel feature to add a file link insert feature. This extension was last
