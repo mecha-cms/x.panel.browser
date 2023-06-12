@@ -2,9 +2,7 @@
 
 $function_browse = <<<JS
 function browse(width, height) {
-    let left = (window.innerWidth / 2) + window.screenX - (width / 2);
-    let top = (window.innerHeight / 2) + window.screenY - (height / 2);
-    return window.open(this.href, 'browser', 'height=' + height + ',left=' + left + ',top=' + top + ',width=' + width);
+    return window.open(this.href, 'browser', 'height=' + height + ',popup=1,width=' + width);
 }
 JS;
 
@@ -114,7 +112,7 @@ if ($is_page) {
                     'type' => null
                 ],
                 'task' => 'get'
-            ]) . '" onclick="return browse.call(this, 600, 300), false;" target="_blank">Click here</a> to insert a file.';
+            ]) . '" onclick="return browse.call(this, 600, 300), false;" rel="opener" target="_blank">Click here</a> to insert a file.';
         }
         // Add a browse link on the `page[link]` field
         if (isset($_['lot']['desk']['lot']['form']['lot'][1]['lot']['tabs']['lot']['data']['lot']['fields']['lot']['link'])) {
@@ -129,7 +127,7 @@ if ($is_page) {
                     'type' => null
                 ],
                 'task' => 'get'
-            ]) . '" onclick="return browse.call(this, 600, 300), false;" target="_blank">Click here</a> to insert a file.';
+            ]) . '" onclick="return browse.call(this, 600, 300), false;" rel="opener" target="_blank">Click here</a> to insert a file.';
         }
         return $_;
     }, 10);
